@@ -1,6 +1,0 @@
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\bin\Release\AS_Course.exe.config
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\bin\Release\AS_Course.exe
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\bin\Release\AS_Course.pdb
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Release\AS_Course.csproj.CoreCompileInputs.cache
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Release\AS_Course.exe
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Release\AS_Course.pdb

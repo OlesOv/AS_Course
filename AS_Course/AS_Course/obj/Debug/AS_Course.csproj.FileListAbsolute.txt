@@ -1,7 +1,0 @@
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\bin\Debug\AS_Course.exe.config
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\bin\Debug\AS_Course.exe
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\bin\Debug\AS_Course.pdb
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Debug\AS_Course.csproj.CoreCompileInputs.cache
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Debug\AS_Course.exe
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Debug\AS_Course.pdb
-C:\Users\paren\Documents\GitHub\AS_Course\AS_Course\AS_Course\obj\Debug\AS_Course.csprojAssemblyReference.cache

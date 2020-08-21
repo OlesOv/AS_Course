@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace AS_Course
 {
@@ -7,6 +9,12 @@ namespace AS_Course
     {
         static void ReplaceTxt(string originalPath)
         {
+            if (!File.Exists(@originalPath))
+            {
+                Console.WriteLine("This file does not exist");
+                return;
+            }
+
             string originalText = File.ReadAllText(@originalPath);
 
             Console.WriteLine("What to delete: ");
@@ -14,7 +22,7 @@ namespace AS_Course
 
             if (originalText.IndexOf(replacingString) < 0) Console.WriteLine("There is no such text!");
 
-            string copyPath = originalPath.Substring(0, @originalPath.Length - 4) + "_backup.txt";
+            string copyPath = Path.ChangeExtension(originalPath, ".bak" + Path.GetExtension(originalPath));
             File.WriteAllText(@copyPath, originalText);
 
             originalText = originalText.Replace(replacingString, "");
@@ -24,34 +32,67 @@ namespace AS_Course
 
         static void WordCounter(string path)
         {
-            char[] separators = { '.', ',', ' ', '\n', '\r', '"' };
-
-            string[] words = File.ReadAllText(@path).Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            Console.WriteLine(words.Length);
-            string[] selectedWords = new string[words.Length/10];
-            int j = 0;
-            for (int i = 9; i < words.Length; i += 10)
+            if (!File.Exists(@path))
             {
-                selectedWords[j] = words[i];
-                j++;
+                Console.WriteLine("This file does not exist");
+                return;
             }
-            Console.WriteLine(String.Join(", ", selectedWords));
+
+            Match words = Regex.Match(File.ReadAllText(@path), @"\b\w+[-']*\w*\b");
+            int counter = 0;
+            string selectedWords = "";
+            while (words.Success)
+            {
+                counter++;
+                if(counter % 10 == 0)
+                {
+                    selectedWords += words.Value + ' ';
+                }
+                words = words.NextMatch();
+            }
+
+            Console.WriteLine("There is {0} words in this text, here is ebery 10th word:\n{1}",counter, selectedWords);
         }
 
         static void ReversedSentance(string path)
         {
+            if (!File.Exists(@path))
+            {
+                Console.WriteLine("This file does not exist");
+                return;
+            }
             int sentanceNumber = 3;
 
-            string text = File.ReadAllText(@path);
-            int index = 0;
-            while(sentanceNumber > 1)
+            Match sentances = Regex.Match(File.ReadAllText(@path), @"[A-Z].*?[\.!?]");
+            while (sentances.Success)
             {
-                index = text.IndexOf(".", index) + 2;
                 sentanceNumber--;
+                if (sentanceNumber == 0)
+                {
+                    Match words = Regex.Match(sentances.Value, @"\b\w+[-']*\w*\b");
+                    string Result = "";
+                    while (words.Success)
+                    {
+                        char[] word = words.Value.ToCharArray();
+                        Array.Reverse(word);
+                        Result += sentances.Value.Substring(Result.Length, words.Index - Result.Length) + new string(word);
+                        words = words.NextMatch();
+                    }
+                    Result += sentances.Value.Substring(Result.Length, sentances.Value.Length - Result.Length);
+                    Console.WriteLine(Result);
+                    return;
+                }
+            sentances = sentances.NextMatch();
             }
-            char[] selectedSentance = text.Substring(index, text.IndexOf(".", index) - index + 1).ToCharArray();
-            Array.Reverse(selectedSentance);
-            Console.WriteLine(new string(selectedSentance));
+        }
+
+
+        public class Comp : IComparer<FileSystemInfo>
+        {
+            public int Compare(FileSystemInfo x, FileSystemInfo y)
+            {
+                return String.Compare(x.Name, y.Name);
+            }
         }
 
         static void DirectoryNavigation(string path)
@@ -63,7 +104,8 @@ namespace AS_Course
             var filesAndFolders = curDir.GetFileSystemInfos();
             Console.WriteLine("\nID | Name");
             int i = 1;
-            foreach(var p in filesAndFolders)
+            Array.Sort(filesAndFolders, new Comp());
+            foreach (var p in filesAndFolders)
             {
                 Console.WriteLine(i + " | " + p.Name);
                 i++;
@@ -93,7 +135,7 @@ namespace AS_Course
         {
             string path;
             string functionNumber;
-            if(args.Length == 0)
+            if (args.Length == 0)
             {
                 Console.WriteLine("What function do you want to call?");
                 functionNumber = Console.ReadLine();
@@ -102,7 +144,7 @@ namespace AS_Course
             {
                 functionNumber = args[0];
             }
-            if(args.Length > 1)
+            if (args.Length > 1)
             {
                 path = args[1];
             }
@@ -111,7 +153,7 @@ namespace AS_Course
                 Console.WriteLine("Enter path (start with \\ for relative path): ");
                 path = Console.ReadLine();
             }
-            if(path[0] == '\\')
+            if (path[0] == '\\')
             {
                 path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + path;
             }
