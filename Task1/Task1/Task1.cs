@@ -5,102 +5,108 @@ using System.Text.RegularExpressions;
 
 namespace AS_Course
 {
-    class Program
+    abstract class TextProcessor
     {
-        static void ReplaceTxt(string originalPath)
+        public static string getText(string path)
         {
-            if (!File.Exists(@originalPath))
+            if (!File.Exists(path))
             {
-                Console.WriteLine("This file does not exist");
-                return;
+                throw new Exception("This file does not exist");
             }
+            return File.ReadAllText(path);
+        }
+    }
 
-            string originalText = File.ReadAllText(@originalPath);
+    abstract class TextDeleter : TextProcessor
+    {
+        public static void DeleteSubstring(string originalPath)
+        {
+            string originalText = getText(originalPath);
 
             Console.WriteLine("What to delete: ");
-            string replacingString = Console.ReadLine();
+            string deletingString = Console.ReadLine();
 
-            if (originalText.IndexOf(replacingString) < 0) Console.WriteLine("There is no such text!");
+            if (originalText.IndexOf(deletingString) < 0) Console.WriteLine("There is no such text!");
 
             string copyPath = Path.ChangeExtension(originalPath, ".bak" + Path.GetExtension(originalPath));
-            File.WriteAllText(@copyPath, originalText);
+            File.WriteAllText(copyPath, originalText);
 
-            originalText = originalText.Replace(replacingString, "");
-            File.WriteAllText(@originalPath, originalText);
+            originalText = originalText.Replace(deletingString, "");
+            File.WriteAllText(originalPath, originalText);
             Console.WriteLine("Done!");
         }
+    }
 
-        static void WordCounter(string path)
+    abstract class WordCounter : TextProcessor
+    {
+        public static void Count(string path)
         {
-            if (!File.Exists(@path))
-            {
-                Console.WriteLine("This file does not exist");
-                return;
-            }
-
-            Match words = Regex.Match(File.ReadAllText(@path), @"\b\w+[-']*\w*\b");
+            Match words = Regex.Match(getText(path), @"\b\w+[-']*\w*\b");
             int counter = 0;
             string selectedWords = "";
             while (words.Success)
             {
                 counter++;
-                if(counter % 10 == 0)
+                if (counter % 10 == 0)
                 {
                     selectedWords += words.Value + ' ';
                 }
                 words = words.NextMatch();
             }
 
-            Console.WriteLine("There is {0} words in this text, here is ebery 10th word:\n{1}",counter, selectedWords);
+            Console.WriteLine("There is {0} words in this text, here is every 10th word:\n{1}", counter, selectedWords);
         }
+    }
 
-        static void ReversedSentance(string path)
+    abstract class SentanceReverser : TextProcessor
+    {
+        public static void Reverse(string path, int sentanceNumber)
         {
-            if (!File.Exists(@path))
-            {
-                Console.WriteLine("This file does not exist");
-                return;
-            }
-            int sentanceNumber = 3;
-
-            Match sentances = Regex.Match(File.ReadAllText(@path), @"[A-Z].*?[\.!?]");
+            Match sentances = Regex.Match(getText(path), @"[A-Z].*?[\.!?]");
             while (sentances.Success)
             {
                 sentanceNumber--;
                 if (sentanceNumber == 0)
                 {
                     Match words = Regex.Match(sentances.Value, @"\b\w+[-']*\w*\b");
+                    Match notWords = Regex.Match(sentances.Value, @"\W+");
                     string Result = "";
                     while (words.Success)
                     {
                         char[] word = words.Value.ToCharArray();
                         Array.Reverse(word);
-                        Result += sentances.Value.Substring(Result.Length, words.Index - Result.Length) + new string(word);
-                        words = words.NextMatch();
+                        if (Result.Length == 0) Result = new string(word);
+                        else
+                        {
+                            Result += notWords.Value + new string(word);
+                            notWords = notWords.NextMatch();
+                        }
+                            words = words.NextMatch();
                     }
-                    Result += sentances.Value.Substring(Result.Length, sentances.Value.Length - Result.Length);
+                    Result += notWords.Value;
                     Console.WriteLine(Result);
                     return;
                 }
-            sentances = sentances.NextMatch();
+                sentances = sentances.NextMatch();
             }
         }
+    }
 
-
-        public class Comp : IComparer<FileSystemInfo>
+    abstract class DirectoryNavigator
+    {
+        class Comp : IComparer<FileSystemInfo>
         {
             public int Compare(FileSystemInfo x, FileSystemInfo y)
             {
                 return String.Compare(x.Name, y.Name);
             }
         }
-
-        static void DirectoryNavigation(string path)
+        public static void StartNavigation(string path)
         {
             Console.Clear();
             Console.WriteLine("Welcome to Directory Navigation!");
-            Console.WriteLine(@path);
-            DirectoryInfo curDir = new DirectoryInfo(@path);
+            Console.WriteLine(path);
+            DirectoryInfo curDir = new DirectoryInfo(path);
             var filesAndFolders = curDir.GetFileSystemInfos();
             Console.WriteLine("\nID | Name");
             int i = 1;
@@ -119,18 +125,21 @@ namespace AS_Course
             {
                 Console.WriteLine("Not an ID. Exiting");
             }
-            if (i == 0) DirectoryNavigation(curDir.Parent.FullName);
+            if (i == 0) StartNavigation(curDir.Parent.FullName);
             foreach (var p in filesAndFolders)
             {
                 i--;
                 if (i == 0)
                 {
-                    if (p.Name.IndexOf('.') < 0) DirectoryNavigation(p.FullName);
+                    if (p.Name.IndexOf('.') < 0) StartNavigation(p.FullName);
                     else Console.WriteLine("It's a file!");
                 }
             }
         }
+    }
 
+    class Task1
+    {
         static void Main(string[] args)
         {
             string path;
@@ -157,21 +166,22 @@ namespace AS_Course
             {
                 path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + path;
             }
+
             try
             {
                 switch (functionNumber)
                 {
                     case "1":
-                        ReplaceTxt(path);
+                        TextDeleter.DeleteSubstring(path);
                         break;
                     case "2":
-                        WordCounter(path);
+                        WordCounter.Count(path);
                         break;
                     case "3":
-                        ReversedSentance(path);
+                        SentanceReverser.Reverse(path, 3);
                         break;
                     case "4":
-                        DirectoryNavigation(path);
+                        DirectoryNavigator.StartNavigation(path);
                         break;
                     default:
                         Console.WriteLine("Wrong parameter");
@@ -180,7 +190,7 @@ namespace AS_Course
             }
             catch
             {
-                Console.WriteLine("Something's wrong. Probably path");
+                Console.WriteLine("Something's wrong. Maybe file or folder does not exist");
             }
             Console.ReadLine();
         }
