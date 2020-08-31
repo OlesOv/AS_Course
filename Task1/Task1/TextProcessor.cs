@@ -3,9 +3,9 @@ using System.IO;
 
 namespace Task1
 {
-    class TextProcessor
+    abstract class TextProcessor
     {
-        public static string getText(string path)
+        public static string GetText(string path)
         {
             if (!File.Exists(path))
             {

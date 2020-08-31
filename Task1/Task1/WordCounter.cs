@@ -7,7 +7,7 @@ namespace Task1
     {
         public static void Count(string path)
         {
-            Match words = Regex.Match(getText(path), @"\b\w+[-']*\w*\b");
+            Match words = Regex.Match(GetText(path), @"\b\w+[-']*\w*\b");
             int counter = 0;
             string selectedWords = "";
             while (words.Success)

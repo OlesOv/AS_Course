@@ -7,7 +7,7 @@ namespace Task1
     {
         public static void DeleteSubstring(string originalPath)
         {
-            string originalText = getText(originalPath);
+            string originalText = GetText(originalPath);
 
             Console.WriteLine("What to delete: ");
             string deletingString = Console.ReadLine();

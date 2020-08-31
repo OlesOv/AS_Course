@@ -7,7 +7,7 @@ namespace Task1
     {
         public static void Reverse(string path, int sentanceNumber)
         {
-            Match sentances = Regex.Match(getText(path), @"[A-Z].*?[\.!?]");
+            Match sentances = Regex.Match(GetText(path), @"[A-Z].*?[\.!?]");
             while (sentances.Success)
             {
                 sentanceNumber--;
