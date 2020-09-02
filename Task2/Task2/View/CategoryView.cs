@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Task2
+namespace Task2.Controller
 {
     public class CategoryView : View
     {
-        public static void ShowCategories()
+        public static void ShowCategories(bool isShowingSubCats)
         {
             ConsoleWriteLine("ID | Name");
-            foreach (var p in Controller.categories)
+            foreach (var p in CategoryController.categories.GetList())
             {
-                if (p.Value.ParentIDs == null)
+                if (isShowingSubCats ? true : p.Value.ParentIDs == null)
                 {
                     ConsoleWriteLine(p.Key + " | " + p.Value.Name);
                 }
@@ -19,20 +17,20 @@ namespace Task2
         }
         public static void ShowCategory(int index)
         {
-            ConsoleWriteLine(Controller.categories[index].Name, ConsoleColor.Green);
+            ConsoleWriteLine(CategoryController.categories[index].Name, ConsoleColor.Green);
             ConsoleWriteLine("ID | Name");
             try
             {
 
-                foreach (var p in Controller.categories[index].CategoryMembers)
+                foreach (var p in CategoryController.categories[index].CategoryMembers)
                 {
                     if (p < 0)
                     {
-                        ConsoleWriteLine(p + " | " + Controller.categories[-p].Name, ConsoleColor.Cyan);
+                        ConsoleWriteLine(p + " | " + CategoryController.categories[-p].Name, ConsoleColor.Cyan);
                     }
                     else
                     {
-                        ConsoleWriteLine(p + " | " + Controller.recipes[p].Name);
+                        ConsoleWriteLine(p + " | " + RecipeController.recipes[p].Name);
                     }
                 }
             }

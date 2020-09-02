@@ -1,11 +1,11 @@
 ﻿using Model;
 using System.Linq;
 
-namespace Task2
+namespace Task2.Controller
 {
     class IngredientController
     {
-        public static MyDict<Ingredient> ingredients = new MyDict<Ingredient>(Controller.path + "\\Ingredients.json");
+        public static IRepository<Ingredient> ingredients = new JsonIngredientRepository();
         public static void AddIngredient()
         {
             View.ConsoleWriteLine("What's name if Ingredient?");
@@ -14,8 +14,8 @@ namespace Task2
                 Name = Controller.Input(),
                 ID = ingredients.Count() + 1
             };
-            ingredients.Add(newIng.ID, newIng);
-            ingredients.UpdateJSON();
+            ingredients.Add(newIng);
+            ingredients.Save();
         }
     }
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model;
-using System.Linq;
 
-namespace Task2
+namespace Task2.Controller
 {
     class RecipeController
     {
-        public static MyDict<Recipe> recipes = new MyDict<Recipe>(Controller.path + "\\Recipes.json");
+        public static IRepository<Recipe> recipes = new JsonRecipeRepository();
         public static void AddRecipe()
         {
             View.ConsoleWriteLine("Name of recipe: ");
@@ -17,7 +16,7 @@ namespace Task2
             View.ConsoleWriteLine("Instruction for recipe: ");
             string Instruction = Controller.Input();
             List<Composition> composition = new List<Composition>();
-            if (IngredientController.ingredients.Count > 0)
+            if (IngredientController.ingredients.Count() > 0)
             {
                 View.ConsoleWriteLine("Adding ingredients. Write /done to finish");
                 IngredientView.ShowIngredients();
@@ -40,13 +39,13 @@ namespace Task2
                 Instruction = Instruction,
                 Composition = composition
             };
-            if (CategoryController.categories.Count > 0)
+            if (CategoryController.categories.Count() > 0)
             {
                 List<int> parentIDs = new List<int>();
-                CategoryView.ShowCategories();
+                CategoryView.ShowCategories(true);
                 View.ConsoleWriteLine("Which categories this recipe belongs?\n(separated by commas with space)");
-                string[] strpID = Controller.Input().Split(", ");
-                if (strpID.Length > 0 && strpID[0] != "")
+                string[] strpID = Controller.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
+                if (strpID.Length > 0)
                 {
                     foreach (string p in strpID)
                     {
@@ -58,9 +57,9 @@ namespace Task2
                 }
                 newRec.ParentIDs = parentIDs;
             }
-            recipes.Add(newRec.ID, newRec);
-            recipes.UpdateJSON();
-            CategoryController.categories.UpdateJSON();
+            recipes.Add(newRec);
+            recipes.Save();
+            CategoryController.categories.Save();
             View.ConsoleWriteLine("Done!");
         }
     }
