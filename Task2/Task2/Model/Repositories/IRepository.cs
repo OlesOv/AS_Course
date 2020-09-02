@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model;
 
-namespace Task2
+namespace Model
 {
     interface IRepository<T>: IDisposable where T : MyData
     {

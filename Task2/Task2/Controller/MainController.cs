@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
+using Model;
 
 namespace Task2.Controller
 {
-    class Controller
+    class MainController
     {
         public static string path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\Data";
-        
+        public static UnitOfWork UnitOfWork;
+
         public static string Input()
         {
             return Console.ReadLine();
@@ -17,15 +19,17 @@ namespace Task2.Controller
             {
                 Directory.CreateDirectory(path);
             }
+            UnitOfWork = new UnitOfWork();
             while (true)
             {
                 View.ConsoleWriteLine("Enter /help to learn commands", ConsoleColor.Yellow);
-                if (CategoryController.categories.Count() > 0) CategoryView.ShowCategories(false);
+                if (UnitOfWork.Categories.Count() > 0) CategoryView.ShowCategories(false);
                 else View.ConsoleWriteLine("There is no data. Add new category with /add_category");
                 string t = Input();
                 switch (t)
                 {
                     case "/exit":
+                        UnitOfWork.Save();
                         return;
 
                     case "/help":

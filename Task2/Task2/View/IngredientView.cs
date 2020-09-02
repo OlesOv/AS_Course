@@ -6,7 +6,7 @@
         {
             string res = "";
             res += "ID | Name\n";
-            foreach (var p in IngredientController.ingredients.GetList())
+            foreach (var p in MainController.UnitOfWork.Ingredients.GetList())
             {
                 res += p.Key + " | " + p.Value.Name + '\n';
             }

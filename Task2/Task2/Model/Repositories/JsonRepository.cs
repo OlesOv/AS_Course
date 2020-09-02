@@ -2,11 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Model;
 
-namespace Task2.Controller
+namespace Model
 {
-    abstract class JsonRepository<T> : IRepository<T> where T : MyData
+    public abstract class JsonRepository<T> : IRepository<T> where T : MyData
     {
         protected string path;
         private Dictionary<int, T> Data;
@@ -16,18 +15,15 @@ namespace Task2.Controller
             this.path = path;
             if (File.Exists(path))
             {
-                Data = GetList();
+                string jsonString = File.ReadAllText(path);
+                Data = JsonSerializer.Deserialize<List<T>>(jsonString).ToDictionary(p => p.ID);
             }
             else
             {
                 Data = new Dictionary<int, T>();
             }
         }
-        public Dictionary<int, T> GetList()
-        {
-            string jsonString = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<List<T>>(jsonString).ToDictionary(p => p.ID);
-        }
+        public Dictionary<int, T> GetList() => Data;
 
         public void Save()
         {
