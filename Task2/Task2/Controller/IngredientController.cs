@@ -2,17 +2,22 @@
 
 namespace Task2.Controller
 {
-    class IngredientController
+    class IngredientController : MVCConnect
     {
-        public static void AddIngredient()
+        View View;
+        public IngredientController(View view)
+        {
+            View = view;
+        }
+        public void AddIngredient()
         {
             View.ConsoleWriteLine("What's name if Ingredient?");
             Ingredient newIng = new Ingredient
             {
-                Name = MainController.Input(),
-                ID = MainController.UnitOfWork.Ingredients.Count() + 1
+                Name = InputController.Input(),
+                ID = UnitOfWork.Ingredients.Count() + 1
             };
-            MainController.UnitOfWork.Ingredients.Add(newIng);
+            UnitOfWork.Ingredients.Add(newIng);
             View.ConsoleWriteLine("Done!");
         }
     }

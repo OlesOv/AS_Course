@@ -2,6 +2,6 @@
 {
     class JsonIngredientRepository : JsonRepository<Ingredient>
     {
-        public JsonIngredientRepository() : base(Task2.Controller.MainController.path + "\\Ingredients.json") { }
+        public JsonIngredientRepository() : base(Task2.Controller.MainController.Path + "\\Ingredients.json") { }
     }
 }

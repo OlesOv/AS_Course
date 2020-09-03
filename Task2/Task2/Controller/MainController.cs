@@ -4,32 +4,34 @@ using Model;
 
 namespace Task2.Controller
 {
+    class Core : MVCConnect { }
     class MainController
     {
-        public static string path = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\Data";
-        public static UnitOfWork UnitOfWork;
-
-        public static string Input()
-        {
-            return Console.ReadLine();
-        }
+        public const string Path = @"C:\Users\paren\Documents\GitHub\altexsoft-lab-2020\Task2\Data";
         public static void Main()
         {
-            if (!Directory.Exists(path))
+            Core Core = new Core();
+            View View = new View(Core);
+            CategoryController CategoryController = new CategoryController(View);
+            IngredientController IngredientController = new IngredientController(View);
+            RecipeController RecipeController = new RecipeController(View);
+            Core.Path = Path;
+
+            if (!Directory.Exists(Core.Path))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(Core.Path);
             }
-            UnitOfWork = new UnitOfWork();
+
             while (true)
             {
                 View.ConsoleWriteLine("Enter /help to learn commands", ConsoleColor.Yellow);
-                if (UnitOfWork.Categories.Count() > 0) CategoryView.ShowCategories(false);
+                if (Core.UnitOfWork.Categories.Count() > 0) View.ShowCategories(false);
                 else View.ConsoleWriteLine("There is no data. Add new category with /add_category");
-                string t = Input();
+                string t = Core.InputController.Input();
                 switch (t)
                 {
                     case "/exit":
-                        UnitOfWork.Save();
+                        Core.UnitOfWork.Save();
                         return;
 
                     case "/help":
@@ -59,7 +61,7 @@ namespace Task2.Controller
                             View.ConsoleWriteLine("Something's wrong");
                             continue;
                         }
-                        CategoryController.OpenCategory(selected);
+                        View.OpenCategory(selected);
                         break;
                 }
                 View.ConsoleWriteLine("");

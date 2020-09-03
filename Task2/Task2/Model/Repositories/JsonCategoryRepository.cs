@@ -2,6 +2,6 @@
 {
     class JsonCategoryRepository : JsonRepository<Category>
     {
-        public JsonCategoryRepository() : base(Task2.Controller.MainController.path + "\\Categories.json") { }
+        public JsonCategoryRepository() : base(Task2.Controller.MainController.Path + "\\Categories.json") { }
     }
 }
