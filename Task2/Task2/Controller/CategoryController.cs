@@ -6,25 +6,21 @@ namespace Task2.Controller
 {
     class CategoryController : MVCConnect
     {
-        View View;
-        public CategoryController(View view)
-        {
-            View = view;
-        }
+        public CategoryController(MVCConnect core) : base(core) { }
         public Category AddCategory()
         {
             View.ConsoleWriteLine("Name of category: ");
             Category newCat = new Category
             {
-                Name = InputController.Input(),
+                Name = inputController.Input(),
                 ID = UnitOfWork.Categories.Count() + 1
             };
             List<int> membersIDs = new List<int>();
             if (UnitOfWork.Recipes.Count() > 0)
             {
-                View.ShowRecipes();
+                View.ShowRecipes(UnitOfWork.Recipes);
                 View.ConsoleWriteLine("What recipes to add here?\n(separated by commas with space)");
-                string[] strmID = InputController.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
+                string[] strmID = inputController.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
                 if (strmID.Length > 0)
                 {
                     foreach (string p in strmID)
@@ -40,9 +36,9 @@ namespace Task2.Controller
             if (UnitOfWork.Categories.Count() > 0)
             {
                 List<int> parentIDs = new List<int>();
-                View.ShowCategories(true);
+                View.ShowCategories(UnitOfWork.Categories, true);
                 View.ConsoleWriteLine("You can make a subcategory from this category. Enter an ID's of parent categories, or leave it empty\n(separated by commas with space)");
-                string[] strpID = InputController.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
+                string[] strpID = inputController.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
                 if (strpID.Length > 0)
                 {
                     foreach (string p in strpID)
@@ -59,6 +55,34 @@ namespace Task2.Controller
             View.ConsoleWriteLine("Done!");
             return newCat;
         }
-        
+        public void OpenCategory(int selected)
+        {
+            if (unitOfWork.Categories.GetElement(selected) != null)
+            {
+                View.ShowCategory(unitOfWork.Categories[selected], unitOfWork.Categories, unitOfWork.Recipes);
+                try
+                {
+                    selected = Convert.ToInt32(inputController.Input());
+                }
+                catch
+                {
+                    View.ConsoleWriteLine("Something's wrong");
+                    return;
+                }
+                if (selected < 0)
+                {
+                    OpenCategory(-selected);
+                }
+                else if (UnitOfWork.Recipes.GetElement(selected) != null)
+                {
+                    View.ShowRecipe(UnitOfWork.Recipes[selected], UnitOfWork.Ingredients);
+                }
+                else
+                {
+                    View.ConsoleWriteLine("Wrong ID");
+                }
+            }
+            else View.ConsoleWriteLine("Wrong ID");
+        }
     }
 }

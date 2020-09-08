@@ -6,32 +6,28 @@ namespace Task2.Controller
 {
     class RecipeController : MVCConnect
     {
-        View View;
-        public RecipeController(View view)
-        {
-            View = view;
-        }
+        public RecipeController(MVCConnect core) : base(core) { }
         public void AddRecipe()
         {
             View.ConsoleWriteLine("Name of recipe: ");
-            string Name = InputController.Input();
+            string Name = inputController.Input();
             View.ConsoleWriteLine("Description of recipe: ");
-            string Description = InputController.Input();
+            string Description = inputController.Input();
             View.ConsoleWriteLine("Instruction for recipe: ");
-            string Instruction = InputController.Input();
+            string Instruction = inputController.Input();
             List<Composition> composition = new List<Composition>();
             if (UnitOfWork.Ingredients.Count() > 0)
             {
                 View.ConsoleWriteLine("Adding ingredients. Write /done to finish");
-                View.ShowIngredients();
+                View.ShowIngredients(UnitOfWork.Ingredients);
                 while (true)
                 {
                     View.ConsoleWriteLine("Enter ID of ingredient:");
-                    string t = InputController.Input();
+                    string t = inputController.Input();
                     if (t == "/done") break;
                     int ingID = Convert.ToInt32(t);
                     View.ConsoleWriteLine("Enter amount of this ingredient:");
-                    double amount = Convert.ToDouble(InputController.Input());
+                    double amount = Convert.ToDouble(inputController.Input());
                     composition.Add(new Composition { IngredientID = ingID, Amount = amount });
                 }
             }
@@ -46,9 +42,9 @@ namespace Task2.Controller
             if (UnitOfWork.Categories.Count() > 0)
             {
                 List<int> parentIDs = new List<int>();
-                View.ShowCategories(true);
+                View.ShowCategories(UnitOfWork.Categories, true);
                 View.ConsoleWriteLine("Which categories this recipe belongs?\n(separated by commas with space)");
-                string[] strpID = InputController.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
+                string[] strpID = inputController.Input().Split(", ", StringSplitOptions.RemoveEmptyEntries);
                 if (strpID.Length > 0)
                 {
                     foreach (string p in strpID)

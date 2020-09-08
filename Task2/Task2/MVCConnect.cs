@@ -5,8 +5,17 @@ namespace Task2
 {
     abstract class MVCConnect
     {
-        public static UnitOfWork UnitOfWork = new UnitOfWork();
-        public static string Path { get; set; }
-        public InputController InputController = new InputController();
+        public MVCConnect() { }
+        public MVCConnect(MVCConnect core)
+        {
+            unitOfWork = core.UnitOfWork;
+            view = core.View;
+        }
+        protected readonly UnitOfWork unitOfWork = new UnitOfWork();
+        protected readonly View view = new View();
+        public InputController inputController = new InputController();
+        public UnitOfWork UnitOfWork => unitOfWork;
+        public View View => view;
+
     }
 }

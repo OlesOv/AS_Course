@@ -5,13 +5,6 @@ namespace Task2
 {
     class View
     {
-        private UnitOfWork UnitOfWork;
-        private Controller.InputController InputController;
-        public View (MVCConnect core)
-        {
-            UnitOfWork = MVCConnect.UnitOfWork;
-            InputController = core.InputController;
-        }
         public void ConsoleWriteLine(string text)
         {
             Console.WriteLine(text);
@@ -23,10 +16,10 @@ namespace Task2
             Console.ResetColor();
         }
 
-        public void ShowCategories(bool isShowingSubCats)
+        public void ShowCategories(IRepository<Category> categories, bool isShowingSubCats)
         {
             ConsoleWriteLine("ID | Name");
-            foreach (var p in UnitOfWork.Categories.GetList())
+            foreach (var p in categories.GetList())
             {
                 if (isShowingSubCats ? true : p.Value.ParentIDs == null)
                 {
@@ -34,22 +27,22 @@ namespace Task2
                 }
             }
         }
-        public void ShowCategory(int index)
+        public void ShowCategory(Category category, IRepository<Category> categories, IRepository<Recipe> recipes)
         {
-            ConsoleWriteLine(UnitOfWork.Categories[index].Name, ConsoleColor.Green);
+            ConsoleWriteLine(category.Name, ConsoleColor.Green);
             ConsoleWriteLine("ID | Name");
             try
             {
 
-                foreach (var p in UnitOfWork.Categories[index].CategoryMembers)
+                foreach (var p in category.CategoryMembers)
                 {
                     if (p < 0)
                     {
-                        ConsoleWriteLine(p + " | " + UnitOfWork.Categories[-p].Name, ConsoleColor.Cyan);
+                        ConsoleWriteLine(p + " | " + categories[-p].Name, ConsoleColor.Cyan);
                     }
                     else
                     {
-                        ConsoleWriteLine(p + " | " + UnitOfWork.Recipes[p].Name);
+                        ConsoleWriteLine(p + " | " + recipes[p].Name);
                     }
                 }
             }
@@ -58,67 +51,38 @@ namespace Task2
                 ConsoleWriteLine("I think there is no recipes. Try /add_recipe");
             }
         }
-        public void OpenCategory(int selected)
-        {
-            if (UnitOfWork.Categories.GetElement(selected) != null)
-            {
-                ShowCategory(selected);
-                try
-                {
-                    selected = Convert.ToInt32(InputController.Input());
-                }
-                catch
-                {
-                    ConsoleWriteLine("Something's wrong");
-                    return;
-                }
-                if (selected < 0)
-                {
-                    OpenCategory(-selected);
-                }
-                else if (UnitOfWork.Recipes.GetElement(selected) != null)
-                {
-                    ShowRecipe(selected);
-                }
-                else
-                {
-                    ConsoleWriteLine("Wrong ID");
-                }
-            }
-            else ConsoleWriteLine("Wrong ID");
-        }
 
-        public void ShowIngredients()
+        public void ShowIngredients(IRepository<Ingredient> ingredients)
         {
             string res = "";
             res += "ID | Name\n";
-            foreach (var p in UnitOfWork.Ingredients.GetList())
+            foreach (var p in ingredients.GetList())
             {
                 res += p.Key + " | " + p.Value.Name + '\n';
             }
             ConsoleWriteLine(res);
         }
 
-        public void ShowRecipe(int index)
+        public void ShowRecipe(Recipe recipe, IRepository<Ingredient> ingredients)
         {
-            ConsoleWriteLine(UnitOfWork.Recipes[index].Name, ConsoleColor.Green);
+            ConsoleWriteLine(recipe.Name, ConsoleColor.Green);
             ConsoleWriteLine("Description: ", ConsoleColor.Green);
-            ConsoleWriteLine(UnitOfWork.Recipes[index].Description);
+            ConsoleWriteLine(recipe.Description);
             ConsoleWriteLine("Instruction: ", ConsoleColor.Green);
-            ConsoleWriteLine(UnitOfWork.Recipes[index].Instruction);
+            ConsoleWriteLine(recipe.Instruction);
             ConsoleWriteLine("Ingredients: ", ConsoleColor.Green);
             int i = 0;
-            foreach (var p in UnitOfWork.Recipes[index].Composition)
+            foreach (var p in recipe.Composition)
             {
                 i++;
-                ConsoleWriteLine(String.Format("  {0}. {1} ({2})", i, UnitOfWork.Ingredients[p.IngredientID].Name, p.Amount));
+                ConsoleWriteLine(String.Format("  {0}. {1} ({2})", i, ingredients[p.IngredientID].Name, p.Amount));
             }
         }
-        public void ShowRecipes()
+        public void ShowRecipes(IRepository<Recipe> recipes)
         {
             string res = "";
             res += "ID | Name\n";
-            foreach (var p in UnitOfWork.Recipes.GetList())
+            foreach (var p in recipes.GetList())
             {
                 res += p.Key + " | " + p.Value.Name + '\n';
             }

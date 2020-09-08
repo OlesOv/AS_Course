@@ -1,53 +1,50 @@
 ﻿using System;
 using System.IO;
-using Model;
 
 namespace Task2.Controller
 {
     class Core : MVCConnect { }
     class MainController
     {
-        public const string Path = @"C:\Users\paren\Documents\GitHub\altexsoft-lab-2020\Task2\Data";
+        public static string Path = AppDomain.CurrentDomain.BaseDirectory + "Data";
         public static void Main()
         {
-            Core Core = new Core();
-            View View = new View(Core);
-            CategoryController CategoryController = new CategoryController(View);
-            IngredientController IngredientController = new IngredientController(View);
-            RecipeController RecipeController = new RecipeController(View);
-            Core.Path = Path;
+            Core core = new Core();
+            CategoryController categoryController = new CategoryController(core);
+            IngredientController ingredientController = new IngredientController(core);
+            RecipeController recipeController = new RecipeController(core);
 
-            if (!Directory.Exists(Core.Path))
+            if (!Directory.Exists(Path))
             {
-                Directory.CreateDirectory(Core.Path);
+                Directory.CreateDirectory(Path);
             }
 
             while (true)
             {
-                View.ConsoleWriteLine("Enter /help to learn commands", ConsoleColor.Yellow);
-                if (Core.UnitOfWork.Categories.Count() > 0) View.ShowCategories(false);
-                else View.ConsoleWriteLine("There is no data. Add new category with /add_category");
-                string t = Core.InputController.Input();
+                core.View.ConsoleWriteLine("Enter /help to learn commands", ConsoleColor.Yellow);
+                if (core.UnitOfWork.Categories.Count() > 0) core.View.ShowCategories(core.UnitOfWork.Categories, false);
+                else core.View.ConsoleWriteLine("There is no data. Add new category with /add_category");
+                string t = core.inputController.Input();
                 switch (t)
                 {
                     case "/exit":
-                        Core.UnitOfWork.Save();
+                        core.UnitOfWork.Save();
                         return;
 
                     case "/help":
-                        View.ConsoleWriteLine("/exit - to exit\n/add_category - to add category\n/add_recipe - to add recipe\n/add_ingredient - to add ingredient\nNow you can navigate through categories, subcategories and recipes using IDs");
+                        core.View.ConsoleWriteLine("/exit - to exit\n/add_category - to add category\n/add_recipe - to add recipe\n/add_ingredient - to add ingredient\nNow you can navigate through categories, subcategories and recipes using IDs");
                         break;
 
                     case "/add_category":
-                        CategoryController.AddCategory();
+                        categoryController.AddCategory();
                         break;
 
                     case "/add_recipe":
-                        RecipeController.AddRecipe();
+                        recipeController.AddRecipe();
                         break;
 
                     case "/add_ingredient":
-                        IngredientController.AddIngredient();
+                        ingredientController.AddIngredient();
                         break;
 
                     default:
@@ -58,13 +55,13 @@ namespace Task2.Controller
                         }
                         catch
                         {
-                            View.ConsoleWriteLine("Something's wrong");
+                            core.View.ConsoleWriteLine("Something's wrong");
                             continue;
                         }
-                        View.OpenCategory(selected);
+                        categoryController.OpenCategory(selected);
                         break;
                 }
-                View.ConsoleWriteLine("");
+                core.View.ConsoleWriteLine("");
             }
         }
     }
